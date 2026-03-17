@@ -21,10 +21,27 @@ KO<-read_csv("Data_Set/KO_data.csv")
 
 Combining the dataframes and adding a column for genotype
 ```{r}
-library(dplyr)
-
 combined_df <- bind_rows(
   AB %>% mutate(genotype = "AB"),
   KO %>% mutate(genotype = "KO")
 )
 ```
+
+Investigating the data structure
+```{r}
+str(combined_df)
+```
+The values which we intended to be numeric are being treated as characters because of "na" in the data so we would like to convert the numeric values. Except, genotype we want to treat as a factor with 2 levels.
+
+
+```{r}
+combined_df <- combined_df %>%
+  mutate(
+    genotype = as.factor(genotype),
+    across(
+      where(is.character) & !all_of("genotype"),
+      as.numeric
+    )
+  )
+```
+
