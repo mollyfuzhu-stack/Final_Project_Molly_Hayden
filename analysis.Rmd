@@ -1,0 +1,30 @@
+---
+title: "Analysis"
+author: "Hayden Simm"
+date: "2026-03-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+Loading in dataframes 
+```{r}
+AB<-read_csv("Data_Set/AB_data.csv")
+KO<-read_csv("Data_Set/KO_data.csv")
+```
+
+Combining the dataframes and adding a column for genotype
+```{r}
+library(dplyr)
+
+combined_df <- bind_rows(
+  AB %>% mutate(genotype = "AB"),
+  KO %>% mutate(genotype = "KO")
+)
+```
