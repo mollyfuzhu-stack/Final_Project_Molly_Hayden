@@ -13,6 +13,7 @@ We are deciding to work in the tidyverse, so we loading in the data using "read_
 
 plan to do a MANOVA to determine the relationship between predictors(dose and genotype) and the responses (survival, hatch, and abnormalities) ?- count data
 
+https://pubs.acs.org/doi/full/10.1021/acs.est.7b04099: write something about how we referenced literature to decide that dose and dpf are factors.
 
 should we do the pairwise comparisons with the behaviour data?- continuous data
 
