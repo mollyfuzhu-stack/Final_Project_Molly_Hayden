@@ -10,3 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 We are deciding to work in the tidyverse, so we loading in the data using "read_csv" 
+
+plan to do a MANOVA to determine the relationship between dose and the responses:
+survival, hatch, and abnormalities?- count data
+
+should we do the pairwise comparisons with the behaviour data?- continuous data
+
+

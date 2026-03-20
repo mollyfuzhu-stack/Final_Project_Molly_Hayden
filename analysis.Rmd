@@ -43,5 +43,12 @@ combined_df <- combined_df %>%
       as.numeric
     )
   )
+
+```{r}
+str(combined_df)
+## i think dose and dpf should be factors rather than numeric as we are going to be grouping the response by these. For the pairwise test, think we'd need to have them as factor but for the multivariate response would be numeric. 
+
+# plan to do a MANOVA?
 ```
+```{r}
 
