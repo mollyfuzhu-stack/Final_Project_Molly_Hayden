@@ -14,45 +14,20 @@ library(tidyverse)
 ```
 
 Loading in dataframes 
+
 ```{r}
-AB<-read_csv("Data_Set/AB_data.csv")
-KO<-read_csv("Data_Set/KO_data.csv")
+killi<-read_csv("Data_Set/HS_MD_killifish.csv")
+
+str(killi)
+
 ```
 
-Combining the dataframes and adding a column for genotype
+Changing predictor Acclimation temperature and Acclimation salinity to factors 
 ```{r}
-combined_df <- bind_rows(
-  AB %>% mutate(genotype = "AB"),
-  KO %>% mutate(genotype = "KO")
-)
+killi$`Accliamtion Temperature`<- factor(killi$`Accliamtion Temperature)
+killi$`Acclimation Salinity`<- factor(killi$`Acclimation Salinity)
+
+str(killi)
 ```
 
-Investigating the data structure
-```{r}
-str(combined_df)
-```
-The values which we intended to be numeric are being treated as characters because of "na" in the data so we would like to convert the numeric values. Except, genotype we want to treat as a factor with 2 levels.
 
-
-```{r}
-combined_df <- combined_df %>%
-  mutate(
-    genotype = as.factor(genotype),
-    across(
-      where(is.character) & !all_of("genotype"),
-      as.numeric
-    )
-  )
-
-
-str(combined_df)
-## i think dose and dpf should be factors rather than numeric as we are going to be grouping the response by these. For the pairwise test, think we'd need to have them as factor but for the multivariate response would be numeric. 
-
-# plan to do a MANOVA?
-```
-```{r}
-responses <-c("x_dead","hatched", "abnormalities") # grouping the response variables 
-
-mlm_fit1 <- lm(as.matrix(combined_df[responses])~genotype + dose,
-               data= combined_df) # creating the mixed linear model equation, but think we would need to change dose to factor?
-summary (mlm_fit1)
