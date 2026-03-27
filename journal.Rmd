@@ -13,6 +13,7 @@ We are deciding to work in the tidyverse, so we loading in the data using "read_
 
 plan to do a MANOVA to determine the relationship between predictors(dose and genotype) and the responses for behavioral endpoints: total distance moved, time at edge and maximum velocity
 
+https://pubs.acs.org/doi/full/10.1021/acs.est.7b04099: write something about how we referenced literature to decide that dose and dpf are factors.
 
 . 
 
