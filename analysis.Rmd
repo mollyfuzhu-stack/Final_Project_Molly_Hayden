@@ -24,10 +24,40 @@ str(killi)
 
 Changing predictor Acclimation temperature and Acclimation salinity to factors 
 ```{r}
-killi$`Accliamtion Temperature`<- factor(killi$`Accliamtion Temperature)
-killi$`Acclimation Salinity`<- factor(killi$`Acclimation Salinity)
-
+killi$Accliamtion_Temperature<- factor (killi$Accliamtion_Temperature)
+killi$Acclimation_Salinity<- factor(killi$Acclimation_Salinity)
+killi$Assay_Temperature<- factor(killi$Assay_Temperature)
 str(killi)
+```
+Make the enzymes to long?
+```{r}
+killi_long <- killi %>%
+  pivot_longer(
+    cols = c(COX_Activity, LDH_Activity, CS_Activity),
+    names_to = "Enzyme",  
+    values_to = "Activity" 
+  )
+head(killi_long)
+```
+`
+```
+Plotting assay temperature by body condition
+
+```{r}
+ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, color= Acclimation_Temperature)) +
+  geom_boxplot()
+```
+
+```
+
+```{r}
+ggplot(killi_long, aes(x = Assay_Temperature, y = Activity, fill = Acclimation_Temperature)) +
+geom_boxplot() +
+  facet_wrap(~Enzyme) +
+  theme_minimal() +
+  xlab("Assay Temperature") +
+  ylab("Enzyme Activity") +
+  labs(fill = "Acclimation Temp")
 ```
 
 
