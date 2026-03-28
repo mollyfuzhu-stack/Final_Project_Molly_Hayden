@@ -49,7 +49,7 @@ ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, color= Acclimati
 ```
 
 ```
-
+Plotting assay temp and body condition grouped by aclimation temperature
 ```{r}
 ggplot(killi_long, aes(x = Assay_Temperature, y = Activity, fill = Acclimation_Temperature)) +
 geom_boxplot() +
