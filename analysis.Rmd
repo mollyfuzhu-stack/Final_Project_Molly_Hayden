@@ -29,7 +29,7 @@ killi$Acclimation_Salinity<- factor(killi$Acclimation_Salinity)
 killi$Assay_Temperature<- factor(killi$Assay_Temperature)
 str(killi)
 ```
-Make the enzymes to long?
+Make the enzymes to long form, so we can plot all three at once
 ```{r}
 killi_long <- killi %>%
   pivot_longer(
@@ -39,25 +39,77 @@ killi_long <- killi %>%
   )
 head(killi_long)
 ```
-`
-```
-Plotting assay temperature by body condition
 
-```{r}
-ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, color= Acclimation_Temperature)) +
-  geom_boxplot()
-```
 
-```
-Plotting assay temp and body condition grouped by aclimation temperature
+Plotting assay temp and enzymes grouped by acclimation temperature
 ```{r}
-ggplot(killi_long, aes(x = Assay_Temperature, y = Activity, fill = Acclimation_Temperature)) +
+ggplot(killi_long, aes(x = Assay_Temperature, y = log(Activity), fill = Accliamtion_Temperature)) +
 geom_boxplot() +
-  facet_wrap(~Enzyme) +
+  facet_wrap(vars(Enzyme), ncol=1) +
   theme_minimal() +
   xlab("Assay Temperature") +
   ylab("Enzyme Activity") +
   labs(fill = "Acclimation Temp")
+
+```
+Plotting assay temperature enzyme activities grouped by acclimation temperature 
+
+```{r}
+cox_activity<- ggplot(killi, aes(x = Assay_Temperature, y = COX_Activity, fill =Accliamtion_Temperature)) +
+geom_boxplot()  +
+  theme_minimal() +
+  xlab("Assay Temperature") +
+  ylab("COX Activity") +
+  labs(fill = "Acclimation Temp")
+
+cs_activity<- ggplot(killi, aes(x = Assay_Temperature, y = CS_Activity, fill = Accliamtion_Temperature)) +geom_boxplot()  +
+  theme_minimal() +
+  xlab("Assay Temperature") +
+  ylab("CS Activity") +
+  labs(fill = "Acclimation Temp")
+
+LDH_activity<- ggplot(killi, aes(x = Assay_Temperature, y = LDH_Activity, fill = Accliamtion_Temperature)) +geom_boxplot()  +
+  theme_minimal() +
+  xlab("Assay Temperature") +
+  ylab("LDH Activity") +
+  labs(fill = "Acclimation Temp")
+
+library(patchwork)
+cox_activity+cs_activity
+
+LDH_activity
 ```
 
+
+
+
+
+Plotting assay temperature by body condition
+```{r}
+ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, fill= Accliamtion_Temperature)) +
+  geom_boxplot() + theme_minimal() +
+  xlab("Assay Temperature") +
+  ylab("Body Condition") +
+  labs(fill = "Acclimation Temp")
+```
+`
+
+Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay
+```{r}
+body<- lm(Body_Condition~ (Accliamtion_Temperature +Acclimation_Salinity)*Assay_Temperature, data=killi_long)
+
+body
+
+plot(body)
+
+```
+```{r}
+Enzymes<- lm(Activity~(Accliamtion_Temperature +Acclimation_Salinity)*Assay_Temperature,data=killi_long)
+
+Enzymes
+
+plot(Enzymes)
+
+
+```
 

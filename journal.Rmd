@@ -16,5 +16,13 @@ possible things to investigate:
 - look at acclimation and body condition 
 - MANOVA 
 
+Boxplot: plotted the assay temp by enzyme activity and body condition. Grouped the values by 
+acclimation temperature. 
 
+Unsure why when I group values by Acclimation_salinity the boxplots shift when its the same output values even with the different acclimation conditions. 
 
+Few outliers in the body condition plot. 10 degrees acclimated have better body condition than the 24 degree acclimated. 
+
+Do we include salinity acclimation as a predictor? The only test condition we have is the change in temperature..
+
+the diagnostic plots for the Lm for body condition (response), temperature and salinity acclimation and assay temperature(predictors)  all are valid 
