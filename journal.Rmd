@@ -26,3 +26,8 @@ Few outliers in the body condition plot. 10 degrees acclimated have better body 
 Do we include salinity acclimation as a predictor? The only test condition we have is the change in temperature..
 
 the diagnostic plots for the Lm for body condition (response), temperature and salinity acclimation and assay temperature(predictors)  all are valid 
+
+COX activity- the gills,liver,spleen
+CS activity- muscles 
+LDH activity- liver, gill, muscle, brain
+Need to compare the activty between all three and see if indication of tissue..
