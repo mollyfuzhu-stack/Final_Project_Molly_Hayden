@@ -112,4 +112,8 @@ plot(Enzymes)
 
 
 ```
+multivariate response equation,took out intercept since all three response do not have the same scale..
+```{r}
+Manova_enzymes_bodycondition<- manova(0 + cbind(COX_Activity,CS_Activity,LDH_Activity, Body_Condition)~ Accliamtion_Temperature*Assay_Temperature, data=killi)
 
+summary(Manova_enzymes_bodycondition)
