@@ -28,4 +28,4 @@ the diagnostic plots for the Lm for body condition (response), temperature and s
 COX activity- the gills,liver,spleen
 CS activity- muscles 
 LDH activity- liver, gill, muscle, brain
-Need to compare the activty between all three and see if indication of tissue..
+Need to compare the activity between all three and see if indication of tissue..

@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(tidyverse)
+library(car)
 ```
 
 Loading in dataframes 
@@ -103,6 +104,7 @@ multivariate response equation for the different enzymes and the impact acclimat
 ```{r}
 
 Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature +Fish_ID, data=killi)
+Anova(Manova_enzymes)
 
 summary(Manova_enzymes)
 
@@ -116,5 +118,6 @@ Linear model for body condition with predictors temperature acclimation, salinit
 body<- lm(Body_Condition~ (Accliamtion_Temperature +Acclimation_Salinity)*Assay_Temperature, data=killi_long)
 
 body
+##note for me: need to add fish id as part of the fixed effects and then can show this and also do the same for 
 
 plot(body)
