@@ -94,6 +94,23 @@ ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, fill= Accliamtio
 ```
 `
 
+
+```
+
+
+```
+multivariate response equation for the different enzymes and the impact acclimation temperature and salinity, assay temp, each fish has on the enzyme expression. Have fish ID as fixed effect. Think we need type ll manova from CAR package
+```{r}
+
+Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature +Fish_ID, data=killi)
+
+summary(Manova_enzymes)
+
+
+
+
+```
+
 Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay
 ```{r}
 body<- lm(Body_Condition~ (Accliamtion_Temperature +Acclimation_Salinity)*Assay_Temperature, data=killi_long)
@@ -101,19 +118,3 @@ body<- lm(Body_Condition~ (Accliamtion_Temperature +Acclimation_Salinity)*Assay_
 body
 
 plot(body)
-
-```
-```{r}
-Enzymes<- lm(Activity~(Accliamtion_Temperature +Acclimation_Salinity)*Assay_Temperature,data=killi_long)
-
-Enzymes
-
-plot(Enzymes)
-
-
-```
-multivariate response equation,took out intercept since all three response do not have the same scale..
-```{r}
-Manova_enzymes_bodycondition<- manova(0 + cbind(COX_Activity,CS_Activity,LDH_Activity, Body_Condition)~ Accliamtion_Temperature*Assay_Temperature, data=killi)
-
-summary(Manova_enzymes_bodycondition)
