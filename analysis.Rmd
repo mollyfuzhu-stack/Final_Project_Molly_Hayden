@@ -107,11 +107,11 @@ summary(Manova_enzymes)
 
 ```
 
-Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay
+Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay. Wanted Fish ID but could not have it in the plot...
 ```{r}
 library(lme4)
 body<- 
-  lm(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature + Fish_ID,  data=killi)
+  lm(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature,  data=killi)
 
 summary(body)
  
@@ -126,7 +126,7 @@ plot(body)
 
 library(effects)
 
-plot(allEffects(body)
+plot(allEffects(body))
 
 ```
 
