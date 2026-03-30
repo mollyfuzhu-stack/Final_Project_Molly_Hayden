@@ -19,9 +19,14 @@ possible things to investigate:
 Boxplot: plotted the assay temp by enzyme activity and body condition. Grouped the values by 
 acclimation temperature. 
 
+COX activity plot shows that the 10 degrees acclimated enzyme is has higher activity than the 24 degrees acclimated fish. Means the fish has 
+higher capacity for oxygen consumption.. so because it was acclimated at this temperature it can perform better than the warm acclimated fish??
+When in warmer temperatures COX activities are similar for the different temperature acclimated scenarios  
 
+CS activity plot has 10 degree acclimated lower than than the 24 degrees acclimated for both test temperatures 
 
 Few outliers in the body condition plot. 10 degrees acclimated have better body condition than the 24 degree acclimated. 
+
 
 the diagnostic plots for the Lm for body condition (response), temperature and salinity acclimation and assay temperature(predictors)  all are valid 
 
