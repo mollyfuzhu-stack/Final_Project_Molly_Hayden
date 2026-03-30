@@ -141,7 +141,10 @@ Linear model for body condition with predictors temperature acclimation, salinit
 
 body<- 
   lm(Body_Condition ~(Accliamtion_Temperature +Acclimation_Salinity)*Assay_Temperature , data=killi)
-summary(body) ## here no real significant interactions 
+
+summary(body)
+
+## here no real significant interactions 
 
 ##keep the two way interaction 
 
@@ -165,8 +168,8 @@ plot(body3)
 
 all effects plot 
 ```{r}
-
 plot(allEffects(body))
+plot(allEffects(body2))
 
 
 ```
