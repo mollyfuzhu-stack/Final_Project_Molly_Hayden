@@ -54,30 +54,119 @@ geom_boxplot() +
 ```
 Plotting assay temperature enzyme activities grouped by acclimation temperature 
 
+GGplots for COX
 ```{r}
-cox_activity<- ggplot(killi, aes(x = Assay_Temperature, y = COX_Activity, fill =Accliamtion_Temperature)) +
-geom_boxplot()  +
+cox_activity <- ggplot(
+  killi,
+  aes(
+    x = Accliamtion_Temperature,
+    y = COX_Activity,
+    fill = Assay_Temperature
+  )
+) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  facet_wrap(
+  ~ Acclimation_Salinity,
+  nrow = 1,
+  labeller = labeller(
+    Acclimation_Salinity = c(
+      "11" = "Low Salinity",
+      "28" = "High Salinity"
+    )
+  )
+) +
+  scale_fill_manual(
+    values = c(
+      "10" = "#6BAED6",
+      "24" = "#FB6A4A"
+    )
+  ) +
   theme_minimal() +
-  xlab("Assay Temperature") +
-  ylab("COX Activity") +
-  labs(fill = "Acclimation Temp")
+  labs(
+    x = "Acclimation Temperature",
+    y = "COX Activity",
+    fill = "Assay Temp"
+  )
+  
+plot(cox_activity)
+```
 
-cs_activity<- ggplot(killi, aes(x = Assay_Temperature, y = CS_Activity, fill = Accliamtion_Temperature)) +geom_boxplot()  +
+LDH
+```{r}
+ldh_activity <- ggplot(
+  killi,
+  aes(
+    x = Accliamtion_Temperature,
+    y = LDH_Activity,
+    fill = Assay_Temperature
+  )
+) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  facet_wrap(
+  ~ Acclimation_Salinity,
+  nrow = 1,
+  labeller = labeller(
+    Acclimation_Salinity = c(
+      "11" = "Low Salinity",
+      "28" = "High Salinity"
+    )
+  )
+) +
+  scale_fill_manual(
+    values = c(
+      "10" = "#6BAED6",
+      "24" = "#FB6A4A"
+    )
+  ) +
   theme_minimal() +
-  xlab("Assay Temperature") +
-  ylab("CS Activity") +
-  labs(fill = "Acclimation Temp")
+  labs(
+    x = "Acclimation Temperature",
+    y = "LDH Activity",
+    fill = "Assay Temp"
+  )
+  
+plot(ldh_activity)
+```
 
-LDH_activity<- ggplot(killi, aes(x = Assay_Temperature, y = LDH_Activity, fill = Accliamtion_Temperature)) +geom_boxplot()  +
+CS
+```{r}
+cs_activity <- ggplot(
+  killi,
+  aes(
+    x = Accliamtion_Temperature,
+    y = CS_Activity,
+    fill = Assay_Temperature
+  )
+) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  facet_wrap(
+  ~ Acclimation_Salinity,
+  nrow = 1,
+  labeller = labeller(
+    Acclimation_Salinity = c(
+      "11" = "Low Salinity",
+      "28" = "High Salinity"
+    )
+  )
+) +
+  scale_fill_manual(
+    values = c(
+      "10" = "#6BAED6",
+      "24" = "#FB6A4A"
+    )
+  ) +
   theme_minimal() +
-  xlab("Assay Temperature") +
-  ylab("LDH Activity") +
-  labs(fill = "Acclimation Temp")
+  labs(
+    x = "Acclimation Temperature",
+    y = "CS Activity",
+    fill = "Assay Temp"
+  )
+  
+plot(cs_activity)
+```
 
-library(patchwork)
-cox_activity+cs_activity
-
-LDH_activity
+```{r}
+#molly save my ass
 ```
 
 Plotting assay temperature by body condition
@@ -110,23 +199,6 @@ body<-
 
 summary(body)
  
-
-plot(body)
-
-```
-
-
-```{r}
-
-
-library(effects)
-
-plot(allEffects(body))
-
-```
-
-```{r}
-suppressPackageStartupMessages({
   library(tidyverse)
   library(lme4)
   library(lmerTest)  # gives p-values
@@ -180,4 +252,3 @@ summary(mod_CS)
 summary(mod_COX)
 summary(mod_LDH)
 ```
-
