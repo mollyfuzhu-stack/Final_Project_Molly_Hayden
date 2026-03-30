@@ -24,6 +24,7 @@ killi_clean <- killi %>%
   drop_na(where(is.numeric))
 ```
 
+PCA
 ```{r}
 suppressPackageStartupMessages({
   library(tidyverse)
