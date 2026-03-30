@@ -18,9 +18,9 @@ library(effects)
 Loading in dataframes 
 
 ```{r}
-killi_1<-read_csv("Data_Set/HS_MD_killifish.csv")
-killi 
-killi<- killi %>%
+killi_raw<-read_csv("Data_Set/HS_MD_killifish.csv")
+killi_raw
+killi<- killi_raw %>%
   drop_na(where(is.numeric))
 
 str(killi)
@@ -117,30 +117,38 @@ multivariate response equation for the different enzymes and the impact acclimat
 
 Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature, data=killi)
 
-
 Anova(Manova_enzymes)
 
 summary(Manova_enzymes)
 
+Manova_enzymes2<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ Accliamtion_Temperature* Acclimation_Salinity*Assay_Temperature, data=killi)
 
+Anova(Manova_enzymes2)
+
+## two way interaction and three way interaction have no differnce.. so the interaction do not impact the enzymes
 ```
 
 Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay. Wanted Fish ID but could not have it in the plot...
 ```{r}
-library(lme4)
 
 body<- 
-  lm(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature, data=killi)
-
-summary(body)
-
-plot(body)
-
+  lm(Body_Condition ~(Accliamtion_Temperature +Acclimation_Salinity)*Assay_Temperature , data=killi)
+summary(body) ## here no real significant interactions 
 
 body2<- 
-  lm(Body_Condition ~ Accliamtion_Temperature* Acclimation_Salinity* Assay_Temperature, data=killi)
-  
+  lm(Body_Condition ~Accliamtion_Temperature*Acclimation_Salinity*Assay_Temperature , data=killi)
+
+summary(body2)## nothing significant in the three way interaction 
+
 plot(body2)
+
+### get warning with the code below.. 
+library(lme4)
+body3 <- 
+  lmer(Body_Condition ~ Accliamtion_Temperature*Acclimation_Salinity*Assay_Temperature + (1|Fish_ID), data=killi)
+  
+plot(body3)
+
 
 ```
 `
@@ -150,16 +158,100 @@ all effects plot
 
 plot(allEffects(body))
 
-plot(allEffects(body2))
+
 ```
 
 Hematcrit 
 ```{r}
 
 hem<- 
-  lm(Hematocrit~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature, data=killi)
+  lm(Hematocrit~Accliamtion_Temperature*Acclimation_Salinity*Assay_Temperature, data=killi)
+
+plot(hem)
 
 
+plot(allEffects(hem))
 
 ```
+
+
+
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(lme4)
+  library(lmerTest)  # gives p-values
+})
+
+# Clean data
+killi_clean <- killi %>%
+  select(
+    Fish_ID,
+    CS_Activity,
+    COX_Activity,
+    LDH_Activity,
+    Assay_Temperature,
+    Accliamtion_Temperature,
+    Acclimation_Salinity,
+    Body_Condition,
+    Hematocrit
+  ) %>%
+  filter(if_all(
+    c(CS_Activity, COX_Activity, LDH_Activity),
+    ~ is.finite(.)
+  ))
+
+# CS model
+mod_CS <- lmer(
+  CS_Activity ~ Assay_Temperature *
+    Accliamtion_Temperature *
+    Acclimation_Salinity +
+    (1 | Fish_ID),
+  data = killi_clean
+)
+
+# COX model
+mod_COX <- lmer(
+  COX_Activity ~ Assay_Temperature *
+    Accliamtion_Temperature *
+    Acclimation_Salinity +
+    (1 | Fish_ID),
+  data = killi_clean
+)
+
+# LDH model
+mod_LDH <- lmer(
+  LDH_Activity ~ Assay_Temperature *
+    Accliamtion_Temperature *
+    Acclimation_Salinity +
+    (1 | Fish_ID),
+  data = killi_clean
+)
+
+#body model, but gives warning for the body... 
+
+body4<- lmer(Body_Condition~Assay_Temperature *
+    Accliamtion_Temperature *
+    Acclimation_Salinity +
+    (1 | Fish_ID),
+  data = killi_clean
+)
+##hem
+hem<- lmer(Hematocrit~Assay_Temperature *
+    Accliamtion_Temperature *
+    Acclimation_Salinity +
+    (1 | Fish_ID),
+  data = killi_clean
+)
+summary(hem)
+plot(hem)
+
+
+
+# Summaries (with p-values)
+summary(mod_CS)
+summary(mod_COX)
+summary(mod_LDH)
+
 
