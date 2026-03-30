@@ -81,10 +81,6 @@ cox_activity+cs_activity
 LDH_activity
 ```
 
-
-
-
-
 Plotting assay temperature by body condition
 ```{r}
 ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, fill= Accliamtion_Temperature)) +
@@ -103,7 +99,8 @@ ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, fill= Accliamtio
 multivariate response equation for the different enzymes and the impact acclimation temperature and salinity, assay temp, each fish has on the enzyme expression. Have fish ID as fixed effect. Think we need type ll manova from CAR package
 ```{r}
 
-Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature +Fish_ID, data=killi)
+Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ (Accliamtion_Temperature + Acclimation_Salinity + Fish_ID)*Assay_Temperature, data=killi)
+
 Anova(Manova_enzymes)
 
 summary(Manova_enzymes)
@@ -115,9 +112,23 @@ summary(Manova_enzymes)
 
 Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay
 ```{r}
-body<- lm(Body_Condition~ (Accliamtion_Temperature +Acclimation_Salinity)*Assay_Temperature, data=killi_long)
+library(lme4)
+body<- lmer(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature +(1+Assay_Temperature|Fish_ID),  data=killi)
 
-body
-##note for me: need to add fish id as part of the fixed effects and then can show this and also do the same for 
+summary(body)
+ 
 
 plot(body)
+
+```
+
+
+```{r}
+
+
+library(effects)
+
+plot(allEffects(body))
+
+```
+
