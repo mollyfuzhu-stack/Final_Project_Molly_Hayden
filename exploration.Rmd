@@ -37,14 +37,13 @@ killi_clean <- killi %>%
     COX_Activity,
     CS_Activity,
     LDH_Activity,
-    Body_Condition,
     Accliamtion_Temperature,
     Acclimation_Salinity,
     Assay_Temperature
   ) %>%
   # Remove rows with NA/Inf in the PCA variables ONLY
   filter(if_all(
-    c(COX_Activity, CS_Activity, LDH_Activity, Body_Condition),
+    c(COX_Activity, CS_Activity, LDH_Activity),
     ~ is.finite(.)
   )) %>%
   mutate(
@@ -58,7 +57,7 @@ killi_clean <- killi %>%
 # Step 2: Run PCA on selected variables
 pca <- prcomp(
   killi_clean %>%
-    select(COX_Activity, CS_Activity, LDH_Activity, Body_Condition),
+    select(COX_Activity, CS_Activity, LDH_Activity),
   scale. = TRUE
 )
 
@@ -83,4 +82,61 @@ autoplot(
 summary(pca)
 pca$rotation
 ```
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(lme4)
+  library(lmerTest)  # gives p-values
+})
+
+# Clean data
+killi_clean <- killi %>%
+  select(
+    Fish_ID,
+    CS_Activity,
+    COX_Activity,
+    LDH_Activity,
+    Assay_Temperature,
+    Accliamtion_Temperature,
+    Acclimation_Salinity
+  ) %>%
+  filter(if_all(
+    c(CS_Activity, COX_Activity, LDH_Activity),
+    ~ is.finite(.)
+  ))
+
+# CS model
+mod_CS <- lmer(
+  CS_Activity ~ Assay_Temperature *
+    Accliamtion_Temperature *
+    Acclimation_Salinity +
+    (1 | Fish_ID),
+  data = killi_clean
+)
+
+# COX model
+mod_COX <- lmer(
+  COX_Activity ~ Assay_Temperature *
+    Accliamtion_Temperature *
+    Acclimation_Salinity +
+    (1 | Fish_ID),
+  data = killi_clean
+)
+
+# LDH model
+mod_LDH <- lmer(
+  LDH_Activity ~ Assay_Temperature *
+    Accliamtion_Temperature *
+    Acclimation_Salinity +
+    (1 | Fish_ID),
+  data = killi_clean
+)
+
+# Summaries (with p-values)
+summary(mod_CS)
+summary(mod_COX)
+summary(mod_LDH)
+```
+
 
