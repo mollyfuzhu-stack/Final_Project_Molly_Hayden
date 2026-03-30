@@ -28,6 +28,7 @@ Changing predictor Acclimation temperature and Acclimation salinity to factors
 killi$Accliamtion_Temperature<- factor (killi$Accliamtion_Temperature)
 killi$Acclimation_Salinity<- factor(killi$Acclimation_Salinity)
 killi$Assay_Temperature<- factor(killi$Assay_Temperature)
+killi$Fish_ID<-factor (killi$Fish_ID)
 str(killi)
 ```
 Make the enzymes to long form, so we can plot all three at once
@@ -38,7 +39,7 @@ killi_long <- killi %>%
     names_to = "Enzyme",  
     values_to = "Activity" 
   )
-head(killi_long)
+str(killi_long)
 ```
 
 
@@ -89,17 +90,13 @@ ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, fill= Accliamtio
   ylab("Body Condition") +
   labs(fill = "Acclimation Temp")
 ```
-`
-
 
 ```
+multivariate response equation for the different enzymes and the impact acclimation temperature and salinity, assay temp, each fish has on the enzyme expression. Tried to add Fish_ID into the MANOVA but could not because it could not do the repeated measures with fish. 
 
-
-```
-multivariate response equation for the different enzymes and the impact acclimation temperature and salinity, assay temp, each fish has on the enzyme expression. Have fish ID as fixed effect. Think we need type ll manova from CAR package
 ```{r}
 
-Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ (Accliamtion_Temperature + Acclimation_Salinity + Fish_ID)*Assay_Temperature, data=killi)
+Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature, data=killi)
 
 Anova(Manova_enzymes)
 
@@ -113,7 +110,8 @@ summary(Manova_enzymes)
 Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay
 ```{r}
 library(lme4)
-body<- lmer(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature +(1+Assay_Temperature|Fish_ID),  data=killi)
+body<- 
+  lm(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature + Fish_ID,  data=killi)
 
 summary(body)
  
@@ -128,7 +126,7 @@ plot(body)
 
 library(effects)
 
-plot(allEffects(body))
+plot(allEffects(body)
 
 ```
 

@@ -30,7 +30,6 @@ Few outliers in the body condition plot. 10 degrees acclimated have better body 
 
 The diagnostic plots for the Lm for body condition (response) with predictors temperature and salinity acclimation, assay temperature and fish ID  all are valid. This model has a linear pattern, has equal variance, there are not any influential points, and has normality. On the Q-Q plot there are some high and low points but they are minimal and majority of points are along the line.
 
-
 COX activity- the gills,liver,spleen
 CS activity- muscles 
 LDH activity- liver, gill, muscle, brain
