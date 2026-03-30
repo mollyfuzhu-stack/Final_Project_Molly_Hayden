@@ -12,23 +12,27 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(car)
+library(effects)
 ```
 
 Loading in dataframes 
 
 ```{r}
-killi<-read_csv("Data_Set/HS_MD_killifish.csv")
+killi_1<-read_csv("Data_Set/HS_MD_killifish.csv")
+killi 
+killi<- killi %>%
+  drop_na(where(is.numeric))
 
 str(killi)
-
 ```
+
 
 Changing predictor Acclimation temperature and Acclimation salinity to factors 
 ```{r}
 killi$Accliamtion_Temperature<- factor (killi$Accliamtion_Temperature)
 killi$Acclimation_Salinity<- factor(killi$Acclimation_Salinity)
 killi$Assay_Temperature<- factor(killi$Assay_Temperature)
-killi$Fish_ID<-factor (killi$Fish_ID)
+
 str(killi)
 ```
 Make the enzymes to long form, so we can plot all three at once
@@ -54,6 +58,7 @@ geom_boxplot() +
   labs(fill = "Acclimation Temp")
 
 ```
+
 Plotting assay temperature enzyme activities grouped by acclimation temperature 
 
 ```{r}
@@ -76,6 +81,8 @@ LDH_activity<- ggplot(killi, aes(x = Assay_Temperature, y = LDH_Activity, fill =
   ylab("LDH Activity") +
   labs(fill = "Acclimation Temp")
 
+
+
 library(patchwork)
 cox_activity+cs_activity
 
@@ -91,6 +98,18 @@ ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, fill= Accliamtio
   labs(fill = "Acclimation Temp")
 ```
 
+
+Grouping body condition by salinity acclimation 
+```{r}
+##grouping by acclimation salinity 
+
+ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, fill= Acclimation_Salinity)) +
+  geom_boxplot() + theme_minimal() +
+  xlab("Assay Temperature") +
+  ylab("Body Condition") +
+  labs(fill = "Acclimation Temp")
+```
+
 ```
 multivariate response equation for the different enzymes and the impact acclimation temperature and salinity, assay temp, each fish has on the enzyme expression. Tried to add Fish_ID into the MANOVA but could not because it could not do the repeated measures with fish. 
 
@@ -98,11 +117,10 @@ multivariate response equation for the different enzymes and the impact acclimat
 
 Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature, data=killi)
 
+
 Anova(Manova_enzymes)
 
 summary(Manova_enzymes)
-
-
 
 
 ```
@@ -110,23 +128,38 @@ summary(Manova_enzymes)
 Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay. Wanted Fish ID but could not have it in the plot...
 ```{r}
 library(lme4)
+
 body<- 
-  lm(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature,  data=killi)
+  lm(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature, data=killi)
 
 summary(body)
- 
 
 plot(body)
 
+
+body2<- 
+  lm(Body_Condition ~ Accliamtion_Temperature* Acclimation_Salinity* Assay_Temperature, data=killi)
+  
+plot(body2)
+
 ```
+`
 
-
+all effects plot 
 ```{r}
 
-
-library(effects)
-
 plot(allEffects(body))
+
+plot(allEffects(body2))
+```
+
+Hematcrit 
+```{r}
+
+hem<- 
+  lm(Hematocrit~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature, data=killi)
+
+
 
 ```
 
