@@ -85,6 +85,7 @@ autoplot(
 summary(pca)
 pca$rotation
 ```
+*add a biplot for how each response loads into PC1 and PC2 space*
 
 ```{r}
 suppressPackageStartupMessages({
