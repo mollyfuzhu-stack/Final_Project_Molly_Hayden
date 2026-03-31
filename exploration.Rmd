@@ -31,7 +31,7 @@ suppressPackageStartupMessages({
   library(ggfortify)
 })
 
-# Step 1: Select only relevant variables + grouping factors
+# Step 1: Select relevant variables + grouping factors
 killi_clean <- killi %>%
   select(
     COX_Activity,
@@ -41,7 +41,7 @@ killi_clean <- killi %>%
     Acclimation_Salinity,
     Assay_Temperature
   ) %>%
-  # Remove rows with NA/Inf in the PCA variables ONLY
+  # Remove rows with NA/Inf in PCA variables
   filter(if_all(
     c(COX_Activity, CS_Activity, LDH_Activity),
     ~ is.finite(.)
@@ -51,13 +51,16 @@ killi_clean <- killi %>%
       Accliamtion_Temperature,
       Acclimation_Salinity,
       Assay_Temperature
-    )
+    ),
+    # Step 1b: log-transform the activity variables
+    COX_Activity = log(COX_Activity + 1e-6),  # add tiny constant to avoid log(0)
+    CS_Activity  = log(CS_Activity  + 1e-6),
+    LDH_Activity = log(LDH_Activity + 1e-6)
   )
 
-# Step 2: Run PCA on selected variables
+# Step 2: Run PCA on log-transformed variables
 pca <- prcomp(
-  killi_clean %>%
-    select(COX_Activity, CS_Activity, LDH_Activity),
+  killi_clean %>% select(COX_Activity, CS_Activity, LDH_Activity),
   scale. = TRUE
 )
 
@@ -73,7 +76,7 @@ autoplot(
   facet_wrap(~ Assay_Temperature) +
   theme_minimal() +
   labs(
-    title = "PCA of Metabolic Enzyme Activity",
+    title = "PCA of Log-Transformed Metabolic Enzyme Activity",
     colour = "Acclimation Temp",
     shape  = "Acclimation Salinity"
   )
