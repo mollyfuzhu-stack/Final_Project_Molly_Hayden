@@ -73,7 +73,7 @@ autoplot(
   facet_wrap(~ Assay_Temperature) +
   theme_minimal() +
   labs(
-    title = "PCA of Metabolic Enzyme Activity & Condition",
+    title = "PCA of Metabolic Enzyme Activity",
     colour = "Acclimation Temp",
     shape  = "Acclimation Salinity"
   )
@@ -87,9 +87,10 @@ pca$rotation
 suppressPackageStartupMessages({
   library(tidyverse)
   library(vegan)
+  library(ggrepel)
 })
 
-# Step 1: Prepare data
+# Step 1: Prepare data + log transform
 killi_rda <- killi %>%
   select(
     Fish_ID,
@@ -105,7 +106,16 @@ killi_rda <- killi %>%
     ~ is.finite(.)
   )) %>%
   mutate(
-    Fish_ID = factor(Fish_ID)   # <- ensure Fish_ID is treated correctly
+    Fish_ID = factor(Fish_ID),
+    Assay_Temperature = factor(Assay_Temperature),
+    Accliamtion_Temperature = factor(Accliamtion_Temperature),
+    Acclimation_Salinity = factor(Acclimation_Salinity),
+
+    # Log-transform (safe for zeros)
+    across(
+      c(CS_Activity, COX_Activity, LDH_Activity),
+      ~ log(. + 1e-6)
+    )
   )
 
 # Step 2: Response matrix
@@ -127,43 +137,53 @@ print(anova(rda_model))
 print(anova(rda_model, by = "terms"))
 print(anova(rda_model, by = "axis"))
 
-# Step 5: Extract scores for plotting
+# Step 5: Extract scores
 sites <- as.data.frame(scores(rda_model, display = "sites", scaling = 2))
-species <- as.data.frame(scores(rda_model, display = "species", scaling = 2))
 
-# Add metadata
+species <- as.data.frame(scores(rda_model, display = "species", scaling = 2)) %>%
+  mutate(label = rownames(.))   # critical fix for labels
+
 sites <- bind_cols(sites, killi_rda)
 
-# Step 6: Plot (ggplot-style RDA biplot)
+# Step 6: Clean RDA plot (no faceting)
 ggplot(sites, aes(
   x = RDA1, y = RDA2,
-  colour = factor(Assay_Temperature),
-  shape  = factor(Acclimation_Salinity)
+  colour = Accliamtion_Temperature,
+  shape  = Assay_Temperature
 )) +
   geom_point(size = 3, alpha = 0.8) +
+
+  # Enzyme vectors
   geom_segment(
     data = species,
     aes(x = 0, y = 0, xend = RDA1, yend = RDA2),
     arrow = arrow(length = unit(0.2, "cm")),
     inherit.aes = FALSE
   ) +
-  geom_text(
+
+  # Repelled labels (clean + readable)
+  geom_text_repel(
     data = species,
-    aes(x = RDA1, y = RDA2, label = rownames(species)),
+    aes(x = RDA1, y = RDA2, label = label),
     inherit.aes = FALSE,
-    hjust = 1.1
+    size = 5,
+    segment.color = "black",
+    box.padding = 0.4,
+    point.padding = 0.3,
+    max.overlaps = Inf
   ) +
-  scale_colour_manual(
-    values = c("10" = "#6BAED6", "24" = "#FB6A4A")
-  ) +
+
   theme_minimal() +
   labs(
-    title = "RDA of Enzyme Activities",
+    title = "RDA of Log-Transformed Enzyme Activities",
     x = "RDA1",
     y = "RDA2",
-    colour = "Assay Temp",
-    shape  = "Salinity"
+    colour = "Acclimation Temp",
+    shape  = "Assay Temp"
   )
+
+plot(rda_model, display = "sites", type = "n")  # empty plot
+points(rda_model, display = "sites", col = "blue")  # residual site scores
 ```
 
 
