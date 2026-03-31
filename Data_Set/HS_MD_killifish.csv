@@ -1,4 +1,4 @@
-﻿Fish_ID,Total_Length ,Mass ,Accliamtion_Temperature,Acclimation_Salinity,Assay_Temperature,COX_Activity,CS_Activity,LDH_Activity,Hematocrit,Body_Condition
+﻿Fish_ID,Total_Length ,Mass ,Acclimation_Temperature,Acclimation_Salinity,Assay_Temperature,COX_Activity,CS_Activity,LDH_Activity,Hematocrit,Body_Condition
 74,74,4.735,10,11,10,13.645,5.448,128.559,33.33,1.168489527
 74,74,4.735,10,11,24,13.028,6.02,172.951,33.33,1.168489527
 75,65,3.586,10,28,10,14.657,6.145,134.337,,1.30578061

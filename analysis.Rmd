@@ -25,7 +25,7 @@ str(killi)
 
 Changing predictor Acclimation temperature and Acclimation salinity to factors 
 ```{r}
-killi$Accliamtion_Temperature<- factor (killi$Accliamtion_Temperature)
+killi$Acclimation_Temperature<- factor (killi$Acclimation_Temperature)
 killi$Acclimation_Salinity<- factor(killi$Acclimation_Salinity)
 killi$Assay_Temperature<- factor(killi$Assay_Temperature)
 str(killi)
@@ -43,7 +43,7 @@ str(killi_long)
 
 Plotting assay temp and enzymes grouped by acclimation temperature
 ```{r}
-ggplot(killi_long, aes(x = Assay_Temperature, y = log(Activity), fill = Accliamtion_Temperature)) +
+ggplot(killi_long, aes(x = Assay_Temperature, y = log(Activity), fill = Acclimation_Temperature)) +
 geom_boxplot() +
   facet_wrap(vars(Enzyme), ncol=1) +
   theme_minimal() +
@@ -60,7 +60,7 @@ GGplots for COX
 cox_activity <- ggplot(
   killi,
   aes(
-    x = Accliamtion_Temperature,
+    x = Acclimation_Temperature,
     y = COX_Activity,
     fill = Assay_Temperature
   )
@@ -113,7 +113,7 @@ LDH
 LDH_activity <- ggplot(
   killi,
   aes(
-    x = Accliamtion_Temperature,
+    x = Acclmation_Temperature,
     y = LDH_Activity,
     fill = Assay_Temperature
   )
@@ -165,7 +165,7 @@ CS
 CS_activity <- ggplot(
   killi,
   aes(
-    x = Accliamtion_Temperature,
+    x = Acclimation_Temperature,
     y = CS_Activity,
     fill = Assay_Temperature
   )
@@ -219,7 +219,7 @@ ggsave(
 Body_Condition<- ggplot(
   killi,
   aes(
-    x = Accliamtion_Temperature,
+    x = Acclimation_Temperature,
     y = Body_Condition
   )
 ) +
@@ -256,7 +256,7 @@ ggsave(
   height = 5,
   dpi = 300
 )
-```
+
 
 
 
@@ -267,7 +267,7 @@ multivariate response equation for the different enzymes and the impact acclimat
 
 ```{r}
 
-Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ Accliamtion_Temperature*Acclimation_Salinity* Assay_Temperature, data=killi)
+Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ Acclimation_Temperature*Acclimation_Salinity* Assay_Temperature, data=killi)
 
 Anova(Manova_enzymes)
 
@@ -280,9 +280,13 @@ Linear model for body condition with predictors temperature acclimation, salinit
 
 
 body<- 
-  lm(Body_Condition ~Accliamtion_Temperature*Acclimation_Salinity , data=killi)
+  lm(Body_Condition ~Acclimation_Temperature*Acclimation_Salinity , data=killi)
+
+plot(body)
 
 summary(body)
+
+```
 
 
 ```
@@ -291,12 +295,32 @@ summary(body)
 all effects plot 
 ```{r}
 library(effects)
+
 plot(allEffects(body))
+
+
+
+(alleffects(body))
+
+
+
+ggsave(
+  filename = "bodyall.png",
+  plot = allEffects(body),
+  width = 8,  
+  height = 5,
+  dpi = 300
+)
 ## see that temperauter has a greater effect than the salinity, not expected as salinity should be an added factor to the body condtion decrease 
 plot(allEffects(body2))
 
 
 ```
+
+```{r}
+
+```
+
 
 Hematcrit 
 ```{r}
@@ -373,3 +397,9 @@ summary(mod_CS)
 summary(mod_COX)
 summary(mod_LDH)
 ```
+
+
+```{r}
+
+```
+
