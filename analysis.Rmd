@@ -25,7 +25,7 @@ str(killi)
 
 Changing predictor Acclimation temperature and Acclimation salinity to factors 
 ```{r}
-killi$Accliamtion_Temperature<- factor (killi$Accliamtion_Temperature)
+killi$Acclimation_Temperature<- factor (killi$Acclimation_Temperature)
 killi$Acclimation_Salinity<- factor(killi$Acclimation_Salinity)
 killi$Assay_Temperature<- factor(killi$Assay_Temperature)
 str(killi)
@@ -43,7 +43,7 @@ str(killi_long)
 
 Plotting assay temp and enzymes grouped by acclimation temperature
 ```{r}
-ggplot(killi_long, aes(x = Assay_Temperature, y = log(Activity), fill = Accliamtion_Temperature)) +
+ggplot(killi_long, aes(x = Assay_Temperature, y = log(Activity), fill = Acclimation_Temperature)) +
 geom_boxplot() +
   facet_wrap(vars(Enzyme), ncol=1) +
   theme_minimal() +
@@ -56,10 +56,11 @@ Plotting assay temperature enzyme activities grouped by acclimation temperature
 
 GGplots for COX
 ```{r}
+
 cox_activity <- ggplot(
   killi,
   aes(
-    x = Accliamtion_Temperature,
+    x = Acclimation_Temperature,
     y = COX_Activity,
     fill = Assay_Temperature
   )
@@ -81,22 +82,38 @@ cox_activity <- ggplot(
       "24" = "#FB6A4A"
     )
   ) +
-  theme_minimal() +
+  theme_classic()+
   labs(
     x = "Acclimation Temperature",
     y = "COX Activity",
-    fill = "Assay Temp"
-  )
+    fill="Assay Temperature"
+  ) +
+   theme(
+     panel.grid = element_blank(),                        # remove gridlines
+    axis.title = element_text(size = 12), # axis labels bigger & bold
+    strip.text = element_text(size = 12), # facet labels bigger & bold
+    legend.title = element_text(size = 12))#
   
 plot(cox_activity)
+```
+Savinf photo
+```{r}
+
+ggsave(
+  filename = "cox_activity.png",
+  plot = cox_activity,
+  width = 8,    # in inches
+  height = 5,
+  dpi = 300
+)
 ```
 
 LDH
 ```{r}
-ldh_activity <- ggplot(
+LDH_activity <- ggplot(
   killi,
   aes(
-    x = Accliamtion_Temperature,
+    x = Acclmation_Temperature,
     y = LDH_Activity,
     fill = Assay_Temperature
   )
@@ -118,22 +135,37 @@ ldh_activity <- ggplot(
       "24" = "#FB6A4A"
     )
   ) +
-  theme_minimal() +
+  theme_classic()+
   labs(
     x = "Acclimation Temperature",
     y = "LDH Activity",
-    fill = "Assay Temp"
-  )
+    fill="Assay Temperature"
+  ) +
+   theme(
+     panel.grid = element_blank(),                        
+    axis.title = element_text(size = 12), 
+    strip.text = element_text(size = 12), 
+    legend.title = element_text(size = 12))
   
-plot(ldh_activity)
+plot(LDH_activity)
+```
+Saving photos 
+```{r}
+ggsave(
+  filename = "LDH_activity.png",
+  plot = LDH_activity,
+  width = 8,    
+  height = 5,
+  dpi = 300
+)
 ```
 
 CS
 ```{r}
-cs_activity <- ggplot(
+CS_activity <- ggplot(
   killi,
   aes(
-    x = Accliamtion_Temperature,
+    x = Acclimation_Temperature,
     y = CS_Activity,
     fill = Assay_Temperature
   )
@@ -155,35 +187,87 @@ cs_activity <- ggplot(
       "24" = "#FB6A4A"
     )
   ) +
-  theme_minimal() +
+  theme_classic()+
   labs(
     x = "Acclimation Temperature",
     y = "CS Activity",
-    fill = "Assay Temp"
-  )
+    fill="Assay Temperature"
+  ) +
+   theme(
+     panel.grid = element_blank(),                        
+    axis.title = element_text(size = 12),
+    strip.text = element_text(size = 12), 
+    legend.title = element_text(size = 12))
   
-plot(cs_activity)
+plot(CS_activity)
 ```
 
+Saving photo
 ```{r}
-#molly save my ass
+ggsave(
+  filename = "CS_activity.png",
+  plot = CS_activity,
+  width = 8,  
+  height = 5,
+  dpi = 300
+)
 ```
 
-Plotting assay temperature by body condition
+
+
 ```{r}
-ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, fill= Accliamtion_Temperature)) +
-  geom_boxplot() + theme_minimal() +
-  xlab("Assay Temperature") +
-  ylab("Body Condition") +
-  labs(fill = "Acclimation Temp")
+Body_Condition<- ggplot(
+  killi,
+  aes(
+    x = Acclimation_Temperature,
+    y = Body_Condition
+  )
+) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  facet_wrap(
+  ~ Acclimation_Salinity,
+  nrow = 1,
+  labeller = labeller(
+    Acclimation_Salinity = c(
+      "11" = "Low Salinity",
+      "28" = "High Salinity"
+    )
+  )) +
+  theme_classic()+
+  labs(
+    x = "Acclimation Temperature",
+    y = "Body Condition",
+  ) +
+   theme(
+     panel.grid = element_blank(),                    
+    axis.title = element_text(size = 12),
+    strip.text = element_text(size = 12), 
+    legend.title = element_text(size = 12))
+  
+plot(Body_Condition)
+
 ```
+Saving photo
+```{r}
+ggsave(
+  filename = "Body_Condition.png",
+  plot = Body_Condition,
+  width = 8,  
+  height = 5,
+  dpi = 300
+)
+
+
+
+
+
 
 ```
 multivariate response equation for the different enzymes and the impact acclimation temperature and salinity, assay temp, each fish has on the enzyme expression. Tried to add Fish_ID into the MANOVA but could not because it could not do the repeated measures with fish. 
 
 ```{r}
 
-Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature, data=killi)
+Manova_enzymes<- manova(cbind(COX_Activity,CS_Activity,LDH_Activity)~ Acclimation_Temperature*Acclimation_Salinity* Assay_Temperature, data=killi)
 
 Anova(Manova_enzymes)
 
@@ -193,12 +277,73 @@ summary(Manova_enzymes)
 
 Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay. Wanted Fish ID but could not have it in the plot...
 ```{r}
-library(lme4)
+
+
 body<- 
-  lm(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature,  data=killi)
+  lm(Body_Condition ~Acclimation_Temperature*Acclimation_Salinity , data=killi)
+
+plot(body)
 
 summary(body)
+
+```
+
+
+```
+`
+
+all effects plot 
+```{r}
+library(effects)
+
+plot(allEffects(body))
+
+
+
+(alleffects(body))
+
+
+
+ggsave(
+  filename = "bodyall.png",
+  plot = allEffects(body),
+  width = 8,  
+  height = 5,
+  dpi = 300
+)
+## see that temperauter has a greater effect than the salinity, not expected as salinity should be an added factor to the body condtion decrease 
+plot(allEffects(body2))
+
+
+```
+
+```{r}
+
+```
+
+
+Hematcrit 
+```{r}
+
+hem<- 
+  lm(Hematocrit~Accliamtion_Temperature*Acclimation_Salinity*Assay_Temperature, data=killi)
+
+plot(hem)
+
+
+plot(allEffects(hem))
+
+```
+
+
+
+
+```{r}
+suppressPackageStartupMessages({
+=======
+summary(body)
  
+>>>>>>> 2f4ed3cee2261a1045d23c301d9bc6b4fb6839be
   library(tidyverse)
   library(lme4)
   library(lmerTest)  # gives p-values
@@ -252,3 +397,9 @@ summary(mod_CS)
 summary(mod_COX)
 summary(mod_LDH)
 ```
+
+
+```{r}
+
+```
+
