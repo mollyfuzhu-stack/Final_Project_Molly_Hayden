@@ -96,6 +96,17 @@ cox_activity <- ggplot(
   
 plot(cox_activity)
 ```
+Savinf photo
+```{r}
+
+ggsave(
+  filename = "cox_activity.png",
+  plot = cox_activity,
+  width = 8,    # in inches
+  height = 5,
+  dpi = 300
+)
+```
 
 LDH
 ```{r}
@@ -131,12 +142,22 @@ LDH_activity <- ggplot(
     fill="Assay Temperature"
   ) +
    theme(
-     panel.grid = element_blank(),                        # remove gridlines
-    axis.title = element_text(size = 12), # axis labels bigger & bold
-    strip.text = element_text(size = 12), # facet labels bigger & bold
-    legend.title = element_text(size = 12))#
+     panel.grid = element_blank(),                        
+    axis.title = element_text(size = 12), 
+    strip.text = element_text(size = 12), 
+    legend.title = element_text(size = 12))
   
 plot(LDH_activity)
+```
+Saving photos 
+```{r}
+ggsave(
+  filename = "LDH_activity.png",
+  plot = LDH_activity,
+  width = 8,    
+  height = 5,
+  dpi = 300
+)
 ```
 
 CS
@@ -173,13 +194,27 @@ CS_activity <- ggplot(
     fill="Assay Temperature"
   ) +
    theme(
-     panel.grid = element_blank(),                        # remove gridlines
-    axis.title = element_text(size = 12), # axis labels bigger & bold
-    strip.text = element_text(size = 12), # facet labels bigger & bold
-    legend.title = element_text(size = 12))#
+     panel.grid = element_blank(),                        
+    axis.title = element_text(size = 12),
+    strip.text = element_text(size = 12), 
+    legend.title = element_text(size = 12))
   
 plot(CS_activity)
 ```
+
+Saving photo
+```{r}
+ggsave(
+  filename = "CS_activity.png",
+  plot = CS_activity,
+  width = 8,  
+  height = 5,
+  dpi = 300
+)
+```
+
+
+
 ```{r}
 Body_Condition<- ggplot(
   killi,
@@ -197,45 +232,35 @@ Body_Condition<- ggplot(
       "11" = "Low Salinity",
       "28" = "High Salinity"
     )
-  )
-) +
-  scale_fill_manual(
-    values = c(
-      "10" = "#6BAED6",
-      "24" = "#FB6A4A"
-    )
-  ) +
+  )) +
   theme_classic()+
   labs(
     x = "Acclimation Temperature",
     y = "Body Condition",
   ) +
    theme(
-     panel.grid = element_blank(),                        # remove gridlines
-    axis.title = element_text(size = 12), # axis labels bigger & bold
-    strip.text = element_text(size = 12), # facet labels bigger & bold
-    legend.title = element_text(size = 12))#
+     panel.grid = element_blank(),                    
+    axis.title = element_text(size = 12),
+    strip.text = element_text(size = 12), 
+    legend.title = element_text(size = 12))
   
 plot(Body_Condition)
 
 ```
-```
-
-
-
-
+Saving photo
 ```{r}
-#molly save my ass
+ggsave(
+  filename = "Body_Condition.png",
+  plot = Body_Condition,
+  width = 8,  
+  height = 5,
+  dpi = 300
+)
 ```
 
-Plotting assay temperature by body condition
-```{r}
-ggplot(killi_long, aes(x= Assay_Temperature, y= Body_Condition, fill= Accliamtion_Temperature)) +
-  geom_boxplot() + theme_minimal() +
-  xlab("Assay Temperature") +
-  ylab("Body Condition") +
-  labs(fill = "Acclimation Temp")
-```
+
+
+
 
 ```
 multivariate response equation for the different enzymes and the impact acclimation temperature and salinity, assay temp, each fish has on the enzyme expression. Tried to add Fish_ID into the MANOVA but could not because it could not do the repeated measures with fish. 
@@ -252,27 +277,13 @@ summary(Manova_enzymes)
 
 Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay. Wanted Fish ID but could not have it in the plot...
 ```{r}
-<<<<<<< HEAD
+
 
 body<- 
   lm(Body_Condition ~Accliamtion_Temperature*Acclimation_Salinity , data=killi)
 
 summary(body)
 
-## here no real significant interactions 
-
-##keep the two way interaction 
-
-
-
-### get warning with the code below.. 
-=======
->>>>>>> 2f4ed3cee2261a1045d23c301d9bc6b4fb6839be
-library(lme4)
-body<- 
-  lm(Body_Condition ~ (Accliamtion_Temperature + Acclimation_Salinity)*Assay_Temperature,  data=killi)
-
-<<<<<<< HEAD
 
 ```
 `
