@@ -14,6 +14,7 @@ Loading packages
 library(tidyverse)
 library(vegan)
 library(ggrepel)
+library(patchwork)
 ```
 
 Loading in dataframe and checking structure
@@ -60,6 +61,80 @@ rda_model <- rda(response_matrix ~ Assay_Temperature +
                  data = killi_rda)
 ```
 
+```{r}
+# ----------------------------
+# 1. Extract diagnostic tools
+# ----------------------------
+
+# Eigenvalues (RDA axes)
+eig_df <- data.frame(
+  Axis = seq_along(rda_model$CCA$eig),
+  Eigenvalue = rda_model$CCA$eig
+)
+
+
+# Goodness-of-fit (sites)
+gof_vals <- goodness(rda_model, display = "sites")
+gof_df <- data.frame(
+  Site = seq_along(gof_vals),
+  GOF = as.numeric(gof_vals)
+)
+
+fitted_vals <- fitted(rda_model)
+resid_vals <- residuals(rda_model)
+
+fr_df <- data.frame(
+  Fitted = fitted_vals[,1],
+  Residuals = resid_vals[,1]
+)
+
+# ----------------------------
+# Plot 1: Eigenvalues
+# ----------------------------
+p1 <- ggplot(eig_df, aes(x = Axis, y = Eigenvalue)) +
+  geom_col() +
+  labs(title = "A",
+       x = "RDA axis",
+       y = "Eigenvalue") +
+  theme_bw()
+
+# ----------------------------
+# Plot 2: Goodness-of-fit
+# ----------------------------
+p2 <- ggplot(gof_df, aes(x = GOF)) +
+  geom_histogram(bins = 30) +
+  labs(title = "B",
+       x = "GOF",
+       y = "Count") +
+  theme_bw()
+
+# ----------------------------
+# Plot 3: Fitted vs Residuals plot
+# ----------------------------
+
+p3 <- ggplot(fr_df, aes(x = Fitted, y = Residuals)) +
+  geom_point(alpha = 0.7) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  labs(title = "C",
+       x = "Fitted values",
+       y = "Residuals") +
+  theme_bw()
+
+
+# ----------------------------
+# Combine into panel
+# ----------------------------
+panel_plot <- (p1 | p2) / (p3)
+
+ggsave(
+  filename = "../Figures/rda_diagnostics.png",
+  plot = panel_plot,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+```
+
 Summary table
 ```{r}
 print(
@@ -75,15 +150,17 @@ print(
 ```
 Overall model is significant so proceeding with interpretations by term. We used permutation-based RDA with Fish_ID as a blocking factor to account for repeated measures on the same fish across assay temperatures
 
-RD1 explains almost all of the variance, so applying a significance test
+RD1 appears to explain most of the variance, so applying a significance test and scree plot
 ```{r}
 print(
   anova(rda_model, by = "axis",
       permutations = how(blocks = killi_rda$Fish_ID))
     )
+
+screeplot(rda_model, main = "", xlab = "Axis", ylab = "Eigenvalues")
 ```
 
-Now doing a term wise test to see how individual predictors contribute to variation5
+Now doing a term wise test to see how individual predictors contribute to variation
 ```{r}
 print(
   anova(rda_model, by = "terms",
@@ -110,7 +187,7 @@ Plot
 ```{r}
 library(ggrepel)
 
-ggplot(sites, aes(RDA1, RDA2)) +
+rda_plot<-ggplot(sites, aes(RDA1, RDA2)) +
   
   geom_point(aes(
     color = Assay_Temperature,
@@ -132,26 +209,36 @@ ggplot(sites, aes(RDA1, RDA2)) +
   
   # RESPONSE VECTORS (arrows)
   geom_segment(data = species,
-               aes(x = 0, y = 0,
-                   xend = RDA1, yend = RDA2),
-               arrow = arrow(length = unit(0.2, "cm")),
-               color = "black") +
+             aes(x = 0, y = 0,
+                 xend = RDA1, yend = RDA2),
+             linewidth = 1,
+             arrow = arrow(length = unit(0.25, "cm")),
+             color = "black") +
   
   geom_text_repel(data = species,
                   aes(x = RDA1, y = RDA2, label = label),
-                  size = 4) +
+                  size = 5) +
   
   guides(
     fill = guide_legend(override.aes = list(shape = 21, colour = "black"))
   ) +
   
-  theme_minimal() +
+  theme_bw() +
   coord_equal() +
   
   labs(
-    color = "Assay Temp",
-    shape = "Acclimation Temp",
-    fill = "Acclimation Salinity"
+    color = "Assay Temperature (°C)",
+    shape = "Acclimation Temperature (°C)",
+    fill = "Acclimation Salinity (ppt)"
   )
 ```
 
+```{r}
+ggsave(
+  filename = "../Figures/rda_plot.png",
+  plot = rda_plot,
+  width = 8,
+  height = 5,
+  dpi = 300
+)
+```
