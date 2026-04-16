@@ -130,7 +130,7 @@ ggplot(sites, aes(RDA1, RDA2)) +
   scale_fill_manual(values = c("28" = "grey40",
                               "11" = "white")) +
   
-  # 🌿 RESPONSE VECTORS (arrows)
+  # RESPONSE VECTORS (arrows)
   geom_segment(data = species,
                aes(x = 0, y = 0,
                    xend = RDA1, yend = RDA2),

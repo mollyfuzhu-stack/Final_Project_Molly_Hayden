@@ -152,7 +152,7 @@ sites <- bind_cols(sites, killi_rda)
 # Step 6: Clean RDA plot (no faceting)
 ggplot(sites, aes(
   x = RDA1, y = RDA2,
-  colour = Accliamtion_Temperature,
+  colour = Acclimation_Temperature,
   shape  = Assay_Temperature
 )) +
   geom_point(size = 3, alpha = 0.8) +
