@@ -1,0 +1,157 @@
+---
+title: "rda"
+author: "Hayden Simm"
+date: "2026-04-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Loading packages
+```{r}
+library(tidyverse)
+library(vegan)
+library(ggrepel)
+```
+
+Loading in dataframe and checking structure
+```{r}
+killi_rda <- read_csv("../Data_Set/HS_MD_killifish.csv")
+
+str(killi_rda)
+```
+The predictors are all numeric, some need to be factors
+
+Converting predictors to factors and Fish_ID to character
+```{r}
+killi_rda <- killi_rda %>%
+  mutate(across(c(Assay_Temperature,
+                  Acclimation_Temperature,
+                  Acclimation_Salinity),
+                as.factor))
+
+killi_rda$Fish_ID <- as.character(killi_rda$Fish_ID)
+
+str(killi_rda)
+```
+
+
+log transforming
+```{r}
+killi_rda <- killi_rda %>%
+  mutate(across(c(CS_Activity, COX_Activity, LDH_Activity),
+                ~log(.x),
+                .names = "log_{.col}"))
+```
+
+Defining the response matrix and predictors
+```{r}
+response_matrix <- killi_rda %>%
+  select(log_CS_Activity, log_COX_Activity, log_LDH_Activity)
+```
+
+Producing the RDA model
+```{r}
+rda_model <- rda(response_matrix ~ Assay_Temperature +
+                                   Acclimation_Temperature +
+                                   Acclimation_Salinity,
+                 data = killi_rda)
+```
+
+Summary table
+```{r}
+print(
+  summary(rda_model)
+    )
+```
+
+Testing model
+```{r}
+print(
+  anova(rda_model, permutations = how(blocks = killi_rda$Fish_ID))
+    )
+```
+Overall model is significant so proceeding with interpretations by term. We used permutation-based RDA with Fish_ID as a blocking factor to account for repeated measures on the same fish across assay temperatures
+
+RD1 explains almost all of the variance, so applying a significance test
+```{r}
+print(
+  anova(rda_model, by = "axis",
+      permutations = how(blocks = killi_rda$Fish_ID))
+    )
+```
+
+Now doing a term wise test to see how individual predictors contribute to variation5
+```{r}
+print(
+  anova(rda_model, by = "terms",
+      permutations = how(blocks = killi_rda$Fish_ID))
+    )
+```
+
+Extracting and joining scores for plotting
+```{r}
+sites <- scores(rda_model, display = "sites", scaling = 2)
+species <- scores(rda_model, display = "species", scaling = 2)
+
+sites <- as.data.frame(sites)
+species <- as.data.frame(species)
+
+species$label <- rownames(species)
+
+sites$Assay_Temperature <- killi_rda$Assay_Temperature
+sites$Acclimation_Temperature <- killi_rda$Acclimation_Temperature
+sites$Acclimation_Salinity <- killi_rda$Acclimation_Salinity
+```
+
+Plot
+```{r}
+library(ggrepel)
+
+ggplot(sites, aes(RDA1, RDA2)) +
+  
+  geom_point(aes(
+    color = Assay_Temperature,
+    fill = Acclimation_Salinity,
+    shape = Acclimation_Temperature
+  ),
+  size = 2.5,
+  stroke = 1.2,
+  alpha = 0.9) +
+  
+  scale_color_manual(values = c("10" = "blue",
+                                "24" = "red")) +
+  
+  scale_shape_manual(values = c("10" = 21,
+                               "24" = 24)) +
+  
+  scale_fill_manual(values = c("28" = "grey40",
+                              "11" = "white")) +
+  
+  # 🌿 RESPONSE VECTORS (arrows)
+  geom_segment(data = species,
+               aes(x = 0, y = 0,
+                   xend = RDA1, yend = RDA2),
+               arrow = arrow(length = unit(0.2, "cm")),
+               color = "black") +
+  
+  geom_text_repel(data = species,
+                  aes(x = RDA1, y = RDA2, label = label),
+                  size = 4) +
+  
+  guides(
+    fill = guide_legend(override.aes = list(shape = 21, colour = "black"))
+  ) +
+  
+  theme_minimal() +
+  coord_equal() +
+  
+  labs(
+    color = "Assay Temp",
+    shape = "Acclimation Temp",
+    fill = "Acclimation Salinity"
+  )
+```
+
