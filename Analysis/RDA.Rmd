@@ -61,17 +61,14 @@ rda_model <- rda(response_matrix ~ Assay_Temperature +
                  data = killi_rda)
 ```
 
+RDA doesn't have the same diagnostic plots as a linear model but some plots to probe the model
 ```{r}
-# ----------------------------
-# 1. Extract diagnostic tools
-# ----------------------------
 
 # Eigenvalues (RDA axes)
 eig_df <- data.frame(
   Axis = seq_along(rda_model$CCA$eig),
   Eigenvalue = rda_model$CCA$eig
 )
-
 
 # Goodness-of-fit (sites)
 gof_vals <- goodness(rda_model, display = "sites")
@@ -156,8 +153,6 @@ print(
   anova(rda_model, by = "axis",
       permutations = how(blocks = killi_rda$Fish_ID))
     )
-
-screeplot(rda_model, main = "", xlab = "Axis", ylab = "Eigenvalues")
 ```
 
 Now doing a term wise test to see how individual predictors contribute to variation
@@ -168,10 +163,14 @@ print(
     )
 ```
 
-Extracting and joining scores for plotting
+Extracting and joining scores for analysis and plotting
 ```{r}
 sites <- scores(rda_model, display = "sites", scaling = 2)
 species <- scores(rda_model, display = "species", scaling = 2)
+bp <- scores(rda_model, display = "bp", scaling = 2)
+
+print(species)
+print(bp)
 
 sites <- as.data.frame(sites)
 species <- as.data.frame(species)
@@ -183,7 +182,7 @@ sites$Acclimation_Temperature <- killi_rda$Acclimation_Temperature
 sites$Acclimation_Salinity <- killi_rda$Acclimation_Salinity
 ```
 
-Plot
+RDA Biplot
 ```{r}
 library(ggrepel)
 
@@ -233,6 +232,7 @@ rda_plot<-ggplot(sites, aes(RDA1, RDA2)) +
   )
 ```
 
+Saving RDA biplot
 ```{r}
 ggsave(
   filename = "../Figures/rda_plot.png",
