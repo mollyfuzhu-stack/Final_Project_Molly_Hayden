@@ -175,7 +175,7 @@ print(bp)
 sites <- as.data.frame(sites)
 species <- as.data.frame(species)
 
-species$label <- rownames(species)
+species$label <- gsub("_Activity", "", gsub("log_", "", rownames(species)))
 
 sites$Assay_Temperature <- killi_rda$Assay_Temperature
 sites$Acclimation_Temperature <- killi_rda$Acclimation_Temperature
