@@ -31,13 +31,10 @@ killi$Acclimation_Salinity<- factor(killi$Acclimation_Salinity)
 killi$Assay_Temperature<- factor(killi$Assay_Temperature)
 str(killi)
 ```
-
-```
 Plotting assay temperature enzyme activities grouped by acclimation temperature 
 
-GGplots for COX, have the points overlaid on the boxplots
+ggplot for cox activity
 ```{r}
-
 cox_activity <- ggplot(
   killi,
   aes(
@@ -76,6 +73,7 @@ cox_activity <- ggplot(
   
 plot(cox_activity)
 ```
+
 Saving photo
 ```{r}
 
@@ -128,7 +126,8 @@ LDH_activity <- ggplot(
   
 plot(LDH_activity)
 ```
-Saving photos 
+
+saving photo
 ```{r}
 ggsave(
   filename = "LDH_activity.png",
@@ -191,8 +190,6 @@ ggsave(
 )
 ```
 
-
-
 ```{r}
 Body_Condition <- ggplot(
   killi,
@@ -231,6 +228,11 @@ Body_Condition <- ggplot(
     legend.title = element_text(size = 12))#
   
 plot(Body_Condition)
+```
+
+
+```{r}
+
 
 ```
 Saving photo
@@ -262,6 +264,7 @@ Checking the assumption of no mulitcolinearity
 cor(killi_log[, c("log_CS_Activity","log_COX_Activity","log_LDH_Activity")])
 pairs(killi_log[, c("log_CS_Activity","log_COX_Activity","log_LDH_Activity")])
 ```
+
 Checking assunption of regression slopes
 ```{r}
 Group <- interaction(killi_log$Acclimation_Temperature,
@@ -319,5 +322,3 @@ scatterplotMatrix(~ log_COX_Activity + log_CS_Activity + log_LDH_Activity,
                   data = killi_log)
 ```
 
-
-```

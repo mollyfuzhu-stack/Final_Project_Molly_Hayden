@@ -232,6 +232,11 @@ rda_plot<-ggplot(sites, aes(RDA1, RDA2)) +
   )
 ```
 
+```{r}
+plot(rda_plot)
+```
+
+
 Saving RDA biplot
 ```{r}
 ggsave(
