@@ -130,6 +130,8 @@ ggsave(
   height = 6,
   dpi = 300
 )
+
+plot(panel_plot)
 ```
 
 Summary table

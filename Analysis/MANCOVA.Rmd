@@ -16,6 +16,7 @@ library(car)
 library(heplots)
 library(jmv)
 library(effectsize)
+library(patchwork)
 ```
 
 Creating dataframe
@@ -96,7 +97,46 @@ Anova(mancova, test.statistic = "Pillai")
 
 Multivariate effect sizes
 ```{r}
-eta_squared(mancova, partial = TRUE)
+eff <- eta_squared(mancova, partial = TRUE)
+print(eff)
+```
+Effect size plot with thresholds
+```{r}
+panel1 <- ggplot(eff_df, aes(x = reorder(Parameter, Eta2_partial), y = Eta2_partial)) +
+  geom_col() +
+  coord_flip() +
+  geom_hline(yintercept = 0.05, linetype = "dashed") +
+  geom_hline(yintercept = 0.15, linetype = "dashed") +
+  labs(
+    x = "Predictor",
+    y = "Partial eta²",
+    title = "A") +
+    theme_bw()
+```
+
+Confidence interval plot
+```{r}
+panel2 <- ggplot(eff_df, aes(x = reorder(Parameter, Eta2_partial), y = Eta2_partial)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = CI_low, ymax = CI_high), width = 0.2) +
+  coord_flip() +
+  labs(x = "Predictor", 
+       y = "Partial eta²",
+       title = "B") +
+    theme_bw()
+```
+
+
+```{r}
+panel_plot <- panel1 / panel2
+
+ggsave(
+  filename = "../Figures/mancova_effectsize.png",
+  plot = panel_plot,
+  width = 8,
+  height = 8,
+  dpi = 300
+)
 ```
 
 Univariate effect sizes
