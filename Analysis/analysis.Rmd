@@ -297,7 +297,7 @@ Predictors: Acclimation temperautre, acclimation salinity, body condition. Body 
 We want to see if there the interaction among these three predictors has an impact on the enzyme activity.
 ```{r}
 
-Manova_enzymes<- manova(cbind(log_COX_Activity,log_CS_Activity,log_LDH_Activity)~ Acclimation_Temperature*Acclimation_Salinity* Assay_Temperature* Body_Condition, data=killi_log)
+Manova_enzymes<- manova(cbind(log_COX_Activity,log_CS_Activity,log_LDH_Activity)~ Acclimation_Temperature * Acclimation_Salinity * Assay_Temperature * Body_Condition, data=killi_log)
 
 Anova(Manova_enzymes)
 
