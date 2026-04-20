@@ -9,22 +9,101 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+Loading packages
+```{r}
+library(tidyverse)
+library(car)
+library(heplots)
+library(jmv)
+library(effectsize)
 ```
 
-## Including Plots
+Creating dataframe
+```{r}
+killi<-read_csv("../Data_Set/HS_MD_killifish.csv")
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+str(killi)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Changing predictors to factors 
+```{r}
+killi$Acclimation_Temperature<- factor (killi$Acclimation_Temperature)
+killi$Acclimation_Salinity<- factor(killi$Acclimation_Salinity)
+killi$Assay_Temperature<- factor(killi$Assay_Temperature)
+str(killi)
+```
+
+Logging the enzyme activites 
+```{r}
+killi_log<-killi  %>% mutate(across(c(CS_Activity, COX_Activity, LDH_Activity),
+                ~log(.x),
+                .names = "log_{.col}"))
+
+str(killi_log)
+```
+
+MANCOVA- because body condition would be a continuous predictor. 
+
+Checking the assumption of no multicollinearity 
+```{r}
+cor(killi_log[, c("log_CS_Activity","log_COX_Activity","log_LDH_Activity")])
+pairs(killi_log[, c("log_CS_Activity","log_COX_Activity","log_LDH_Activity")])
+```
+
+Checking assumption of regression slopes
+```{r}
+Group <- interaction(killi_log$Acclimation_Temperature,
+                        killi_log$Acclimation_Salinity,
+                        killi_log$Assay_Temperature)
+                        
+CS <- lm(log_CS_Activity ~ Group * Body_Condition, data = killi_log)
+anova(CS)
+
+COX <- lm(log_COX_Activity ~ Group * Body_Condition, data = killi_log)
+anova(COX)
+
+LDH <- lm(log_LDH_Activity ~ Group * Body_Condition, data = killi_log)
+anova(LDH)
+```
+All pre-assumptions are met
+
+Testing normality in responses and homogeneity of covariance
+```{r}
+jmv::mancova(data= killi_log, deps= c(log_COX_Activity,log_CS_Activity, log_LDH_Activity), factors= c(Acclimation_Temperature, Acclimation_Salinity, Assay_Temperature), multivar= list('pillai'),  covs = Body_Condition, boxM = TRUE,
+  shapiro = TRUE, qqPlot = TRUE)
+```
+The qq-plot demonstrates the data follows normal distrubution even though shapiro wilks test says the data does not
+
+```{r}
+jmv::mancova(data= killi_log, deps= c(log_COX_Activity,log_CS_Activity, log_LDH_Activity), factors= c(Acclimation_Temperature, Acclimation_Salinity, Assay_Temperature), multivar= list('pillai'),  covs = Body_Condition, boxM = TRUE,
+  shapiro = TRUE, qqPlot = TRUE)
+```
+
+Making the MANCOVA model
+```{r}
+mancova <- manova(
+  cbind(log_COX_Activity, log_CS_Activity, log_LDH_Activity) ~
+    Acclimation_Temperature * Acclimation_Salinity * Assay_Temperature +
+    Body_Condition,
+  data = killi_log
+)
+```
+
+Testing interactions
+```{r}
+Anova(mancova, test.statistic = "Pillai")
+```
+
+Multivariate effect sizes
+```{r}
+eta_squared(mancova, partial = TRUE)
+```
+
+Univariate effect sizes
+```{r}
+aov_res <- summary.aov(mancova)
+print(aov_res)
+
+eta_squared(aov(mancova), partial = TRUE)
+```
+
