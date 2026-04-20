@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(car)
+library(heplots)
+library(jmv)
 ```
 
 Loading in dataframes 
@@ -91,12 +93,12 @@ LDH
 LDH_activity <- ggplot(
   killi,
   aes(
-    x = Acclmation_Temperature,
+    x = Acclimation_Temperature,
     y = LDH_Activity,
     fill = Assay_Temperature
   )
 ) +
-  geom_boxplot(position = position_dodge(width = 0.8)) + 
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
   geom_jitter(
     position = position_jitterdodge(
       dodge.width = 0.8,
@@ -105,16 +107,6 @@ LDH_activity <- ggplot(
     alpha = 0.7,
     size = 2,
     shape = 21  
-)
-  facet_wrap(
-  ~ Acclimation_Salinity,
-  nrow = 1,
-  labeller = labeller(
-    Acclimation_Salinity = c(
-      "11" = "Low Salinity",
-      "28" = "High Salinity"
-    )
-  )
 ) +
   scale_fill_manual(
     values = c(
@@ -130,9 +122,9 @@ LDH_activity <- ggplot(
   ) +
    theme(
      panel.grid = element_blank(),                        
-    axis.title = element_text(size = 12), 
-    strip.text = element_text(size = 12), 
-    legend.title = element_text(size = 12))
+    axis.title = element_text(size = 12), # axis labels bigger & bold
+    strip.text = element_text(size = 12), # facet labels bigger & bold
+    legend.title = element_text(size = 12))#
   
 plot(LDH_activity)
 ```
@@ -157,16 +149,15 @@ CS_activity <- ggplot(
     fill = Assay_Temperature
   )
 ) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +
-  facet_wrap(
-  ~ Acclimation_Salinity,
-  nrow = 1,
-  labeller = labeller(
-    Acclimation_Salinity = c(
-      "11" = "Low Salinity",
-      "28" = "High Salinity"
-    )
-  )
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  geom_jitter(
+    position = position_jitterdodge(
+      dodge.width = 0.8,
+      jitter.width = 0.2
+    ),
+    alpha = 0.7,
+    size = 2,
+    shape = 21  
 ) +
   scale_fill_manual(
     values = c(
@@ -182,9 +173,9 @@ CS_activity <- ggplot(
   ) +
    theme(
      panel.grid = element_blank(),                        
-    axis.title = element_text(size = 12),
-    strip.text = element_text(size = 12), 
-    legend.title = element_text(size = 12))
+    axis.title = element_text(size = 12), # axis labels bigger & bold
+    strip.text = element_text(size = 12), # facet labels bigger & bold
+    legend.title = element_text(size = 12))#
   
 plot(CS_activity)
 ```
@@ -203,33 +194,41 @@ ggsave(
 
 
 ```{r}
-Body_Condition<- ggplot(
+Body_Condition <- ggplot(
   killi,
   aes(
     x = Acclimation_Temperature,
-    y = Body_Condition
+    y = Body_Condition,
+    fill = Assay_Temperature
   )
 ) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +
-  facet_wrap(
-  ~ Acclimation_Salinity,
-  nrow = 1,
-  labeller = labeller(
-    Acclimation_Salinity = c(
-      "11" = "Low Salinity",
-      "28" = "High Salinity"
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  geom_jitter(
+    position = position_jitterdodge(
+      dodge.width = 0.8,
+      jitter.width = 0.2
+    ),
+    alpha = 0.7,
+    size = 2,
+    shape = 21  
+) +
+  scale_fill_manual(
+    values = c(
+      "10" = "#6BAED6",
+      "24" = "#FB6A4A"
     )
-  )) +
+  ) +
   theme_classic()+
   labs(
     x = "Acclimation Temperature",
     y = "Body Condition",
+    fill="Assay Temperature"
   ) +
    theme(
-     panel.grid = element_blank(),                    
-    axis.title = element_text(size = 12),
-    strip.text = element_text(size = 12), 
-    legend.title = element_text(size = 12))
+     panel.grid = element_blank(),                        
+    axis.title = element_text(size = 12), # axis labels bigger & bold
+    strip.text = element_text(size = 12), # facet labels bigger & bold
+    legend.title = element_text(size = 12))#
   
 plot(Body_Condition)
 
@@ -244,9 +243,7 @@ ggsave(
   dpi = 300
 )
 ```
-multivariate response equation for the different enzymes and the impact acclimation temperature and salinity, assay temp, each fish has on the enzyme expression. Tried to add Fish_ID into the MANOVA but could not because it could not do the repeated measures with fish. 
 
-Manova set up: 
 
 Logging the enzyme activites 
 ```{r}
@@ -257,70 +254,70 @@ killi_log<-killi  %>% mutate(across(c(CS_Activity, COX_Activity, LDH_Activity),
 str(killi_log)
 ```
 
-Predictors: Acclimation temperautre, acclimation salinity, body condition. Body condtion is a continous predictor. 
+
+MANCOVA- because body condition would be a continuous predictor. 
+
+Checking the assumption of no mulitcolinearity 
+```{r}
+cor(killi_log[, c("log_CS_Activity","log_COX_Activity","log_LDH_Activity")])
+pairs(killi_log[, c("log_CS_Activity","log_COX_Activity","log_LDH_Activity")])
+```
+Checking assunption of regression slopes
+```{r}
+Group <- interaction(killi_log$Acclimation_Temperature,
+                        killi_log$Acclimation_Salinity,
+                        killi_log$Assay_Temperature)
+                        
+CS <- lm(log_CS_Activity ~ Group * Body_Condition, data = killi_log)
+anova(CS)
+
+COX <- lm(log_COX_Activity ~ Group * Body_Condition, data = killi_log)
+anova(COX)
+
+LDH <- lm(log_LDH_Activity ~ Group * Body_Condition, data = killi_log)
+anova(LDH)
+```
+All assumptions are met
+
+Making the MANCOVA 
+```{r}
+jmv::mancova(data= killi_log, deps= c(log_COX_Activity,log_CS_Activity, log_LDH_Activity), factors= c(Acclimation_Temperature, Acclimation_Salinity, Assay_Temperature), multivar= list('pillai'),  covs = Body_Condition, boxM = TRUE,
+  shapiro = TRUE, qqPlot = TRUE)
+```
+The qq-plot demonstrates the data follows normal distrubution even though shapiro wilks test says the data does not
+
+
+
+
+
+
+EXTRA FROM BEOFRE 
+Predictors: Acclimation temperautre, acclimation salinity, body condition. Body condtion is a continous predictor while the others are all factors.
+
+We want to see if there the interaction among these three predictors has an impact on the enzyme activity.
 ```{r}
 
-Manova_enzymes<- manova(cbind(log_COX_Activity,log_CS_Activity,log_LDH_Activity)~ Acclimation_Temperature*Acclimation_Salinity* Assay_Temperature+ Body_Condition, data=killi_log)
+Manova_enzymes<- manova(cbind(log_COX_Activity,log_CS_Activity,log_LDH_Activity)~ Acclimation_Temperature*Acclimation_Salinity* Assay_Temperature* Body_Condition, data=killi_log)
 
 Anova(Manova_enzymes)
 
 summary(Manova_enzymes)
 
-```
-
-Linear model for body condition with predictors temperature acclimation, salinity acclimation, and temperature assay. Wanted Fish ID but could not have it in the plot...
-```{r}
-body<- 
-  lm(Body_Condition ~Acclimation_Temperature*Acclimation_Salinity , data=killi)
-
-plot(body)
-
-summary(body)
+heplot(Manova_enzymes)
 
 ```
 
-
-```
-`
-
-all effects plot 
-```{r}
-library(effects)
-
-plot(allEffects(body))
-
-
-
-(alleffects(body))
-
-ggsave(
-  filename = "bodyall.png",
-  plot = allEffects(body),
-  width = 8,  
-  height = 5,
-  dpi = 300
-)
-## see that temperature has a greater effect than the salinity, not expected as salinity should be an added factor to the body condition decrease 
-plot(allEffects(body2))
-
-```
-
-
-
-Hematcrit 
+Checking assumptions of MANOVA
 ```{r}
 
-hem<- 
-  lm(Hematocrit~Accliamtion_Temperature*Acclimation_Salinity*Assay_Temperature, data=killi)
-
-plot(hem)
+                        
+boxM(cbind(log_COX_Activity,log_CS_Activity,log_LDH_Activity) ~ Group, data = killi_log) 
 
 
-plot(allEffects(hem))
 
+scatterplotMatrix(~ log_COX_Activity + log_CS_Activity + log_LDH_Activity,
+                  data = killi_log)
 ```
-
-
 
 
 ```
