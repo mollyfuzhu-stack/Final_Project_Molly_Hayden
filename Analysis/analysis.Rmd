@@ -9,28 +9,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
-library(tidyverse)
-library(car)
-library(heplots)
-library(jmv)
-```
+
 
 Loading in dataframes 
 
-```{r}
-killi<-read_csv("../Data_Set/HS_MD_killifish.csv")
-str(killi)
 
-```
 
-Changing predictor Acclimation temperature and Acclimation salinity to factors 
-```{r}
-killi$Acclimation_Temperature<- factor (killi$Acclimation_Temperature)
-killi$Acclimation_Salinity<- factor(killi$Acclimation_Salinity)
-killi$Assay_Temperature<- factor(killi$Assay_Temperature)
-str(killi)
-```
+
 Plotting assay temperature enzyme activities grouped by acclimation temperature 
 
 ggplot for cox activity
@@ -246,54 +231,6 @@ ggsave(
 )
 ```
 
-
-Logging the enzyme activites 
-```{r}
-killi_log<-killi  %>% mutate(across(c(CS_Activity, COX_Activity, LDH_Activity),
-                ~log(.x),
-                .names = "log_{.col}"))
-
-str(killi_log)
-```
-
-
-MANCOVA- because body condition would be a continuous predictor. 
-
-Checking the assumption of no mulitcolinearity 
-```{r}
-cor(killi_log[, c("log_CS_Activity","log_COX_Activity","log_LDH_Activity")])
-pairs(killi_log[, c("log_CS_Activity","log_COX_Activity","log_LDH_Activity")])
-```
-
-Checking assunption of regression slopes
-```{r}
-Group <- interaction(killi_log$Acclimation_Temperature,
-                        killi_log$Acclimation_Salinity,
-                        killi_log$Assay_Temperature)
-                        
-CS <- lm(log_CS_Activity ~ Group * Body_Condition, data = killi_log)
-anova(CS)
-
-COX <- lm(log_COX_Activity ~ Group * Body_Condition, data = killi_log)
-anova(COX)
-
-LDH <- lm(log_LDH_Activity ~ Group * Body_Condition, data = killi_log)
-anova(LDH)
-```
-All assumptions are met
-
-Making the MANCOVA 
-```{r}
-jmv::mancova(data= killi_log, deps= c(log_COX_Activity,log_CS_Activity, log_LDH_Activity), factors= c(Acclimation_Temperature, Acclimation_Salinity, Assay_Temperature), multivar= list('pillai'),  covs = Body_Condition, boxM = TRUE,
-  shapiro = TRUE, qqPlot = TRUE)
-```
-The qq-plot demonstrates the data follows normal distrubution even though shapiro wilks test says the data does not
-
-
-
-
-
-
 EXTRA FROM BEOFRE 
 Predictors: Acclimation temperautre, acclimation salinity, body condition. Body condtion is a continous predictor while the others are all factors.
 
@@ -320,5 +257,3 @@ boxM(cbind(log_COX_Activity,log_CS_Activity,log_LDH_Activity) ~ Group, data = ki
 
 scatterplotMatrix(~ log_COX_Activity + log_CS_Activity + log_LDH_Activity,
                   data = killi_log)
-```
-
