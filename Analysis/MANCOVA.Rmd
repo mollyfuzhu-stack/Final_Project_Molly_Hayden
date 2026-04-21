@@ -75,11 +75,6 @@ jmv::mancova(data= killi_log, deps= c(log_COX_Activity,log_CS_Activity, log_LDH_
 ```
 The qq-plot demonstrates the data follows normal distrubution even though shapiro wilks test says the data does not
 
-```{r}
-jmv::mancova(data= killi_log, deps= c(log_COX_Activity,log_CS_Activity, log_LDH_Activity), factors= c(Acclimation_Temperature, Acclimation_Salinity, Assay_Temperature), multivar= list('pillai'),  covs = Body_Condition, boxM = TRUE,
-  shapiro = TRUE, qqPlot = TRUE)
-```
-
 Making the MANCOVA model
 ```{r}
 mancova <- manova(
