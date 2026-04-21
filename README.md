@@ -4,4 +4,4 @@ The data set we are wokring on is from an exposurure with killi fish and investi
 
 We plan to do a mulitvariate analaysis to determine how the different acclimation conditions and assay temperature impact the enzyme activity. The predictors are temperature, salinity acclimation, temperautre assay, and body condition. Acclimation temperautre and salinity and assay temperature were treated as factors while body condition was continuous. The response variables are COX activity, CS activity, LDH activity. An RDA and MANCOVA were used for the analysis.
 
-The data set used for this analysis is in the folder Data_set and is called HS_MD_killifish.csv. The code for analysis is in the folder Analysis. There are two read.me for the analysis, RDA and MANCOVA. These can be run with the csv file in the folder Data_set.
+The data set used for this analysis is in the folder Data_set and is called HS_MD_killifish.csv. The code for analysis is in the folder Analysis. There are two rdm files for the analysis, RDA and MANCOVA. These can be run with the csv file in the folder Data_set.
