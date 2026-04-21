@@ -1,0 +1,232 @@
+---
+title: "Analysis"
+author: "Hayden Simm"
+date: "2026-03-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+Loading in dataframes 
+
+
+
+
+Plotting assay temperature enzyme activities grouped by acclimation temperature 
+
+ggplot for cox activity
+```{r}
+cox_activity <- ggplot(
+  killi,
+  aes(
+    x = Acclimation_Temperature,
+    y = COX_Activity,
+    fill = Assay_Temperature
+  )
+) +
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  geom_jitter(
+    position = position_jitterdodge(
+      dodge.width = 0.8,
+      jitter.width = 0.2
+    ),
+    alpha = 0.7,
+    size = 2,
+    shape = 21  
+) +
+  scale_fill_manual(
+    values = c(
+      "10" = "#6BAED6",
+      "24" = "#FB6A4A"
+    )
+  ) +
+  theme_classic()+
+  labs(
+    x = "Acclimation Temperature",
+    y = "COX Activity",
+    fill="Assay Temperature"
+  ) +
+   theme(
+     panel.grid = element_blank(),                        
+    axis.title = element_text(size = 12), # axis labels bigger & bold
+    strip.text = element_text(size = 12), # facet labels bigger & bold
+    legend.title = element_text(size = 12))#
+  
+plot(cox_activity)
+```
+
+Saving photo
+```{r}
+
+ggsave(
+  filename = "cox_activity.png",
+  plot = cox_activity,
+  width = 8,    # in inches
+  height = 5,
+  dpi = 300
+)
+```
+
+LDH
+```{r}
+LDH_activity <- ggplot(
+  killi,
+  aes(
+    x = Acclimation_Temperature,
+    y = LDH_Activity,
+    fill = Assay_Temperature
+  )
+) +
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  geom_jitter(
+    position = position_jitterdodge(
+      dodge.width = 0.8,
+      jitter.width = 0.2
+    ),
+    alpha = 0.7,
+    size = 2,
+    shape = 21  
+) +
+  scale_fill_manual(
+    values = c(
+      "10" = "#6BAED6",
+      "24" = "#FB6A4A"
+    )
+  ) +
+  theme_classic()+
+  labs(
+    x = "Acclimation Temperature",
+    y = "LDH Activity",
+    fill="Assay Temperature"
+  ) +
+   theme(
+     panel.grid = element_blank(),                        
+    axis.title = element_text(size = 12), # axis labels bigger & bold
+    strip.text = element_text(size = 12), # facet labels bigger & bold
+    legend.title = element_text(size = 12))#
+  
+plot(LDH_activity)
+```
+
+saving photo
+```{r}
+ggsave(
+  filename = "LDH_activity.png",
+  plot = LDH_activity,
+  width = 8,    
+  height = 5,
+  dpi = 300
+)
+```
+
+CS
+```{r}
+CS_activity <- ggplot(
+  killi,
+  aes(
+    x = Acclimation_Temperature,
+    y = CS_Activity,
+    fill = Assay_Temperature
+  )
+) +
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  geom_jitter(
+    position = position_jitterdodge(
+      dodge.width = 0.8,
+      jitter.width = 0.2
+    ),
+    alpha = 0.7,
+    size = 2,
+    shape = 21  
+) +
+  scale_fill_manual(
+    values = c(
+      "10" = "#6BAED6",
+      "24" = "#FB6A4A"
+    )
+  ) +
+  theme_classic()+
+  labs(
+    x = "Acclimation Temperature",
+    y = "CS Activity",
+    fill="Assay Temperature"
+  ) +
+   theme(
+     panel.grid = element_blank(),                        
+    axis.title = element_text(size = 12), # axis labels bigger & bold
+    strip.text = element_text(size = 12), # facet labels bigger & bold
+    legend.title = element_text(size = 12))#
+  
+plot(CS_activity)
+```
+
+Saving photo
+```{r}
+ggsave(
+  filename = "CS_activity.png",
+  plot = CS_activity,
+  width = 8,  
+  height = 5,
+  dpi = 300
+)
+```
+
+```{r}
+Body_Condition <- ggplot(
+  killi,
+  aes(
+    x = Acclimation_Temperature,
+    y = Body_Condition,
+    fill = Assay_Temperature
+  )
+) +
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  geom_jitter(
+    position = position_jitterdodge(
+      dodge.width = 0.8,
+      jitter.width = 0.2
+    ),
+    alpha = 0.7,
+    size = 2,
+    shape = 21  
+) +
+  scale_fill_manual(
+    values = c(
+      "10" = "#6BAED6",
+      "24" = "#FB6A4A"
+    )
+  ) +
+  theme_classic()+
+  labs(
+    x = "Acclimation Temperature",
+    y = "Body Condition",
+    fill="Assay Temperature"
+  ) +
+   theme(
+     panel.grid = element_blank(),                        
+    axis.title = element_text(size = 12), # axis labels bigger & bold
+    strip.text = element_text(size = 12), # facet labels bigger & bold
+    legend.title = element_text(size = 12))#
+  
+plot(Body_Condition)
+```
+
+
+```{r}
+
+
+```
+Saving photo
+```{r}
+ggsave(
+  filename = "Body_Condition.png",
+  plot = Body_Condition,
+  width = 8,  
+  height = 5,
+  dpi = 300
+)
+```

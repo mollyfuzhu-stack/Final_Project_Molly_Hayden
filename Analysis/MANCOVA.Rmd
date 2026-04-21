@@ -102,7 +102,7 @@ print(eff)
 ```
 Effect size plot with thresholds
 ```{r}
-panel1 <- ggplot(eff_df, aes(x = reorder(Parameter, Eta2_partial), y = Eta2_partial)) +
+panel1 <- ggplot(eff, aes(x = reorder(Parameter, Eta2_partial), y = Eta2_partial)) +
   geom_col() +
   coord_flip() +
   geom_hline(yintercept = 0.05, linetype = "dashed") +
@@ -112,11 +112,12 @@ panel1 <- ggplot(eff_df, aes(x = reorder(Parameter, Eta2_partial), y = Eta2_part
     y = "Partial eta²",
     title = "A") +
     theme_bw()
+print(panel1)
 ```
 
 Confidence interval plot
 ```{r}
-panel2 <- ggplot(eff_df, aes(x = reorder(Parameter, Eta2_partial), y = Eta2_partial)) +
+panel2 <- ggplot(eff, aes(x = reorder(Parameter, Eta2_partial), y = Eta2_partial)) +
   geom_point(size = 3) +
   geom_errorbar(aes(ymin = CI_low, ymax = CI_high), width = 0.2) +
   coord_flip() +
@@ -124,11 +125,14 @@ panel2 <- ggplot(eff_df, aes(x = reorder(Parameter, Eta2_partial), y = Eta2_part
        y = "Partial eta²",
        title = "B") +
     theme_bw()
+print(panel2)
 ```
 
 
 ```{r}
 panel_plot <- panel1 / panel2
+
+print(panel_plot)
 
 ggsave(
   filename = "../Figures/mancova_effectsize.png",
@@ -144,6 +148,7 @@ Univariate effect sizes
 aov_res <- summary.aov(mancova)
 print(aov_res)
 
-eta_squared(aov(mancova), partial = TRUE)
+aov_res2<- eta_squared(aov(mancova), partial = TRUE)
+print(aov_res2)
 ```
 
